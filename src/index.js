@@ -25,7 +25,12 @@ class Board extends React.Component {
   handleClick (i) {
     // criamos uma array com o state de cada quadrado
     const quadrados = this.state.quadrados.slice();
-    // mudamos o state do quadrado clicado
+
+    if ( calcularVencedor(this.state.quadrados) || quadrados[i]  ) {
+      return;
+    }
+
+  // mudamos o state do quadrado clicado
     quadrados[i] = this.state.xIsNext ? 'X' : 'O';
     // atualizamos o status da array no componente Board (Tabuleiro)
     this.setState({
