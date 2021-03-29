@@ -42,7 +42,15 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Próximo jogador: ' + (this.state.xIsNext ? 'X' : 'O' );
+    const vencedor = calcularVencedor(this.state.quadrados)
+    console.log(vencedor)
+    let status
+
+    if (vencedor) {
+      status = "Vencedor: " + vencedor
+    } else {
+      status = "Próximo jogador: " + (this.state.xIsNext ? 'X' : 'O')
+    }
 
     return (
       <div>
@@ -103,8 +111,9 @@ function calcularVencedor (quadrados) {
     [2, 4, 6],
   ]
 
-  for (let i = 0; i < linhas.lenght; i++) {
-    const [a,b,c] = linhas [i]
+  for (let i = 0; i < linhas.length; i++) {
+    const [a,b,c] = linhas[i]
+    //console.log('quadrados: ', quadrados[a])
     if (quadrados[a] && quadrados[a] === quadrados[b] && quadrados[a] === quadrados[c]) {
       return quadrados[a]
     }
