@@ -2,31 +2,47 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 
-class Square extends React.Component {
-  constructor (props) {
-    super (props)
-    this.state = {
-      value: null
-    }
-  }
-
-  render() {
-    return (
-      <button className="square" 
-              onClick={() => this.setState({value: 'X'})}>
-        { this.state.value }
+// Componente de Função Square
+function Square (props) {
+  return (
+      <button className="square" onClick={props.onClick}>
+        {props.value}
       </button>
     );
-  }
 }
 
+
 class Board extends React.Component {
-  renderSquare(i) {
-    return <Square value={i} />;
+  constructor (props) {
+    super (props)
+
+    this.state = {
+      quadrados: Array(9).fill(null),
+      xIsNext: true
+    } 
+  }
+
+  handleClick (i) {
+    // criamos uma array com o state de cada quadrado
+    const quadrados = this.state.quadrados.slice();
+    // mudamos o state do quadrado clicado
+    quadrados[i] = this.state.xIsNext ? 'X' : 'O';
+    // atualizamos o status da array no componente Board (Tabuleiro)
+    this.setState({
+      quadrados: quadrados,
+      xIsNext: !this.state.xIsNext
+
+    })   
+
+  }
+
+  renderSquare (i) {
+   return <Square value={this.state.quadrados[i]}
+                  onClick={() => this.handleClick(i)} />
   }
 
   render() {
-    const status = 'Próximo jogador: X';
+    const status = 'Próximo jogador: ' + (this.state.xIsNext ? 'X' : 'O' );
 
     return (
       <div>
@@ -73,3 +89,25 @@ ReactDOM.render(
   <Game />,
   document.getElementById('root')
 );
+
+
+function calcularVencedor (quadrados) {
+  const linhas = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ]
+
+  for (let i = 0; i < linhas.lenght; i++) {
+    const [a,b,c] = linhas [i]
+    if (quadrados[a] && quadrados[a] === quadrados[b] && quadrados[a] === quadrados[c]) {
+      return quadrados[a]
+    }
+  }
+  return null
+}
