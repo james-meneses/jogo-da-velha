@@ -13,53 +13,15 @@ function Square (props) {
 
 
 class Board extends React.Component {
-  constructor (props) {
-    super (props)
-
-    this.state = {
-      quadrados: Array(9).fill(null),
-      xIsNext: true
-    } 
-  }
-
-  handleClick (i) {
-    // criamos uma array com o state de cada quadrado
-    const quadrados = this.state.quadrados.slice();
-
-    if ( calcularVencedor(this.state.quadrados) || quadrados[i]  ) {
-      return;
-    }
-
-  // mudamos o state do quadrado clicado
-    quadrados[i] = this.state.xIsNext ? 'X' : 'O';
-    // atualizamos o status da array no componente Board (Tabuleiro)
-    this.setState({
-      quadrados: quadrados,
-      xIsNext: !this.state.xIsNext
-
-    })   
-
-  }
 
   renderSquare (i) {
-   return <Square value={this.state.quadrados[i]}
-                  onClick={() => this.handleClick(i)} />
+   return <Square value={this.props.quadrados[i]}
+                  onClick={() => this.props.onClick(i)} />
   }
 
   render() {
-    const vencedor = calcularVencedor(this.state.quadrados)
-    console.log(vencedor)
-    let status
-
-    if (vencedor) {
-      status = "Vencedor: " + vencedor
-    } else {
-      status = "Próximo jogador: " + (this.state.xIsNext ? 'X' : 'O')
-    }
-
     return (
       <div>
-        <div className="status">{status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -80,12 +42,65 @@ class Board extends React.Component {
   }
 }
 
+// Instância que controla o jogo e sua renderização
 class Game extends React.Component {
+
+  constructor (props) {
+    super (props)
+    this.state = {
+      history: [{
+        quadrados: Array(9).fill(null)
+      }],
+      xIsNext: true
+    }
+  }
+
+   handleClick (i) {
+    const history = this.state.history
+    const atual = history[history.length - 1]
+
+    // criamos uma array com o state de cada quadrado
+    const quadrados = atual.quadrados.slice();
+
+    if ( calcularVencedor(quadrados) || quadrados[i]  ) {
+      return;
+    }
+
+  // mudamos o state do quadrado clicado
+    quadrados[i] = this.state.xIsNext ? 'X' : 'O';
+    // atualizamos o status da array no componente Game
+    this.setState({
+      history: history.concat([{
+        quadrados: quadrados
+      }]),
+      xIsNext: !this.state.xIsNext
+
+    })   
+
+  }
+
   render() {
+   const historico = this.state.history
+   const atual = historico[historico.length - 1]
+   const vencedor = calcularVencedor(atual.quadrados)
+
+   let status
+
+   if (vencedor) {
+      status = "Vencedor: " + vencedor
+   } else {
+    status = 'Próximo jogador: ' + (this.state.xIsNext ? 'X' : 'O')
+   }
+
+
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <div className="status">{status}</div>
+          <Board 
+            quadrados={atual.quadrados}
+            onClick={(i) => this.handleClick(i)}
+          />
         </div>
         <div className="game-info">
           <div>{/* status */}</div>
