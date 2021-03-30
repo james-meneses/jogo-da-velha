@@ -30,10 +30,15 @@ ol, ul {
   padding: 0;
   text-align: center;
   width: 34px;
+  transition: .3s ease-in-out;
 }
 
 .square:focus {
   outline: none;
+}
+
+.square--winner {
+  color: #ff2d52;
 }
 
 .kbd-navigation .square:focus {
@@ -56,8 +61,18 @@ ol, ul {
 }
 
 
-.lista-jogadas {
+.item-jogada {
   margin: 0 0 0.45rem 0;
+  transition: 0.3s linear;
+}
+
+.item-jogada--atual .botao-jogada{
+  background: #789291;
+  cursor: auto;
+}
+
+.item-jogada--atual .botao-jogada:hover{
+  background: #789291
 }
 
 .botao-jogada {
@@ -73,5 +88,5 @@ ol, ul {
 }
 
 .botao-jogada:hover {
-  background: #02ccc3;
+  background: #11908a;
 }

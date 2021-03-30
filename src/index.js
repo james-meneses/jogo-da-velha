@@ -4,8 +4,10 @@ import './index.css'
 
 // Componente de Função Square
 function Square (props) {
+  //console.log(props)
+
   return (
-      <button className="square" onClick={props.onClick}>
+      <button className={`square ${props.vencedor ? 'square--winner' : '' }`} onClick={props.onClick}>
         {props.value}
       </button>
     );
@@ -15,8 +17,14 @@ class Board extends React.Component {
 
   renderSquare (i) {
     //console.log('the i', i)
-   return <Square key={i} value={this.props.quadrados[i]}
-                  onClick={() => this.props.onClick(i)} />
+
+  let vencedor = false; 
+
+  if (this.props.vencedor)       
+      vencedor = this.props.vencedor.indexOf(i) >= 0
+
+
+   return <Square key={i} vencedor={vencedor} value={this.props.quadrados[i]} onClick={() => this.props.onClick(i)} />
   }
 
   // renderiza a linha do tabuleiro
@@ -52,26 +60,6 @@ class Board extends React.Component {
         {matrix}
       </div>
     )
-
-    /*return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );*/
   }
 }
 
@@ -126,15 +114,26 @@ class Game extends React.Component {
    const historico = this.state.history
    const atual = historico[this.state.stepNumber]
    const vencedor = calcularVencedor(atual.quadrados)
+   let nomeVencedor
+   if (vencedor) {
+     nomeVencedor = atual.quadrados[vencedor[0]]
+    // vencedor.map((i) =>  )
+   }
 
+   console.log(atual)
+
+   //console.log(nomeVencedor)
    // Mapeando o histórico de jogadas
   const jogadas = historico.map((step, jogada) => {
     const desc = jogada ? 
     "Jogada #" + jogada : 
-    "Início do Jogo"  
+    "Início do Jogo"
+
+    let jogadaAtual = jogada === this.state.stepNumber  
 
     return(
-      <li className="lista lista-jogadas" key={jogada}> 
+      <li className={`item item-jogada ${jogadaAtual ?
+                     "item-jogada--atual" : ""} `} key={jogada}> 
         <button className="botao botao-jogada" onClick={() => this.jumpTo(jogada)}>{desc}</button>
       </li>
       )
@@ -143,7 +142,9 @@ class Game extends React.Component {
    let status
 
    if (vencedor) {
-      status = "Vencedor: " + vencedor
+      status = "Vencedor: " + nomeVencedor
+   } else if (this.state.stepNumber === 9) {
+      status = "Empate!"
    } else {
     status = 'Próximo jogador: ' + (this.state.xIsNext ? 'X' : 'O')
    }
@@ -155,6 +156,7 @@ class Game extends React.Component {
           <div className="status" >{status}</div>
           <Board 
             quadrados={atual.quadrados}
+            vencedor={vencedor}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
@@ -177,6 +179,7 @@ ReactDOM.render(
 
 
 function calcularVencedor (quadrados) {
+  // possíveis combinações (para ganhar o jogo)
   const linhas = [
     [0, 1, 2],
     [3, 4, 5],
@@ -188,11 +191,13 @@ function calcularVencedor (quadrados) {
     [2, 4, 6],
   ]
 
+  // vamos avaliar se há match em alguma combinação
+  // se houver, retornamos o vencedor
   for (let i = 0; i < linhas.length; i++) {
     const [a,b,c] = linhas[i]
     //console.log('quadrados: ', quadrados[a])
     if (quadrados[a] && quadrados[a] === quadrados[b] && quadrados[a] === quadrados[c]) {
-      return quadrados[a]
+      return linhas[i]
     }
   }
   return null
