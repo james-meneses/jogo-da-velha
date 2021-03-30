@@ -51,7 +51,8 @@ class Game extends React.Component {
       history: [{
         quadrados: Array(9).fill(null)
       }],
-      xIsNext: true
+      xIsNext: true,
+      stepNumber: 0
     }
   }
 
@@ -79,10 +80,31 @@ class Game extends React.Component {
 
   }
 
+  //criandoo método jumpTo
+  jumpTo (jogada) {
+    this.setState ({
+      stepNumber: jogada,
+      xIsNext: (jogada % 2) === 0  
+    })
+  }
+
   render() {
    const historico = this.state.history
    const atual = historico[historico.length - 1]
    const vencedor = calcularVencedor(atual.quadrados)
+
+   // Mapeando o histórico de jogadas
+  const jogadas = historico.map((step, jogada) => {
+    const desc = jogada ? 
+    "Ir para a jogada #" + jogada : 
+    "Ir para o início do jogo"  
+
+    return(
+      <li key={jogada}> 
+        <button onClick={() => this.jumpTo(jogada)}>{desc}</button>
+      </li>
+      )
+   })
 
    let status
 
@@ -96,15 +118,14 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <div className="status">{status}</div>
           <Board 
             quadrados={atual.quadrados}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
+          <div>{status}</div>
+          <ol>{jogadas}</ol>
         </div>
       </div>
     );
