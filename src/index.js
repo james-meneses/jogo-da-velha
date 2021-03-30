@@ -57,7 +57,7 @@ class Game extends React.Component {
   }
 
    handleClick (i) {
-    const history = this.state.history
+    const history = this.state.history.slice(0, this.state.stepNumber + 1)
     const atual = history[history.length - 1]
 
     // criamos uma array com o state de cada quadrado
@@ -74,7 +74,8 @@ class Game extends React.Component {
       history: history.concat([{
         quadrados: quadrados
       }]),
-      xIsNext: !this.state.xIsNext
+      xIsNext: !this.state.xIsNext,
+      stepNumber: history.length
 
     })   
 
@@ -90,7 +91,7 @@ class Game extends React.Component {
 
   render() {
    const historico = this.state.history
-   const atual = historico[historico.length - 1]
+   const atual = historico[this.state.stepNumber]
    const vencedor = calcularVencedor(atual.quadrados)
 
    // Mapeando o histórico de jogadas
