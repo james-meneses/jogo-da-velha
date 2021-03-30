@@ -11,16 +11,49 @@ function Square (props) {
     );
 }
 
-
 class Board extends React.Component {
 
   renderSquare (i) {
-   return <Square value={this.props.quadrados[i]}
+    //console.log('the i', i)
+   return <Square key={i} value={this.props.quadrados[i]}
                   onClick={() => this.props.onClick(i)} />
   }
 
+  // renderiza a linha do tabuleiro
+  // i = linha atual do tabuleiro
+  renderRow (i) { 
+
+    // vamos mutiplicar a linha atual do tabuleiro por 3
+    // e atribuir a i, assim cada coluna tem um id único
+    let rowItems = [];
+        i = i * 3
+
+    // loop renderiza cada coluna da linha atual
+    for (let n = 0; n < 3; n++, i++ ) {
+      rowItems[n] = this.renderSquare(i)
+    }
+   // console.log('rowItems ', rowItems)
+    return <div key={i} className="board-row">{rowItems}</div>
+  }
+
+
   render() {
+    //matriz bidimensional que será nosso tabuleiro
+    let matrix = [[],[]]
+
+    // vamos processar 3 linhas, armazenando cada uma
+    // em matrix[m]
+
+     for ( let m = 0; m < 3; m++ ) 
+      matrix[m] = this.renderRow(m)
+
     return (
+      <div>
+        {matrix}
+      </div>
+    )
+
+    /*return (
       <div>
         <div className="board-row">
           {this.renderSquare(0)}
@@ -38,7 +71,7 @@ class Board extends React.Component {
           {this.renderSquare(8)}
         </div>
       </div>
-    );
+    );*/
   }
 }
 
@@ -97,12 +130,12 @@ class Game extends React.Component {
    // Mapeando o histórico de jogadas
   const jogadas = historico.map((step, jogada) => {
     const desc = jogada ? 
-    "Ir para a jogada #" + jogada : 
-    "Ir para o início do jogo"  
+    "Jogada #" + jogada : 
+    "Início do Jogo"  
 
     return(
-      <li key={jogada}> 
-        <button onClick={() => this.jumpTo(jogada)}>{desc}</button>
+      <li className="lista lista-jogadas" key={jogada}> 
+        <button className="botao botao-jogada" onClick={() => this.jumpTo(jogada)}>{desc}</button>
       </li>
       )
    })
@@ -119,13 +152,15 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
+          <div className="status" >{status}</div>
           <Board 
             quadrados={atual.quadrados}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
         <div className="game-info">
-          <div>{status}</div>
+          
+          <h2 className="title">Jogadas</h2>
           <ol>{jogadas}</ol>
         </div>
       </div>
